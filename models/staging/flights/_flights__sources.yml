@@ -51,4 +51,71 @@ sources:
             count: 10000
             period: day # тут ошибка, если последняя запись больше 1 дня в таблице
           filter: current_timestamp::date - book_date::date < 30000 #условие для скнирования не всей таблицы
-        loaded_at_field: book_date::timestamp
+        loaded_at_field: book_date
+      - name: boarding_passes
+        description: Посадочные талоны
+        columns: 
+          - name: ticket_no
+            description: Номер билета
+          - name: flight_id 
+            description: Номер рейса
+          - name: boarding_no
+            description: Нет данных
+          - name: seat_no
+            description: Номер места
+      - name: flights
+        description: Рейсы
+        columns: 
+          - name: flight_id
+            description: ID рейса
+          - name: flight_no 
+            description: Номер рейса
+          - name: scheduled_departure
+            description: Время вылета в расписании
+          - name: scheduled_arrival
+            description: Время прибытия в расписании
+          - name: departure_airport 
+            description: Аэропорт вылета
+          - name: arrival_airport
+            description: Аэропорт прибытия
+          - name: status 
+            description: Статус рейса
+          - name: aircraft_code
+            description: Код модели самолета
+          - name: actual_departure 
+            description: Время вылета фактическое
+          - name: actual_arrival
+            description: Время прибытия фактическое
+        freshness:
+          warn_after:
+            count: 600000
+            period: hour
+          error_after:
+            count: 10000
+            period: day
+          filter: current_timestamp::date - actual_departure::date < 30000
+        loaded_at_field: actual_departure::timestamp
+      - name: ticket_flights
+        description: Перелеты
+        columns: 
+          - name: ticket_no
+            description: Номер билета
+          - name: flight_id 
+            description: ID рейса
+          - name: fare_conditions
+            description: Класс места
+          - name: amount
+            description: Стоимость билета
+      - name: tickets
+        description: Места в самолете
+        columns: 
+          - name: ticket_no
+            description: Номер билета
+          - name: book_ref 
+            description: Номер бронирования
+          - name: passenger_id
+            description: ID пассажира
+          - name: passenger_name
+            description: Имя пассажира
+          - name: contact_data 
+            description: Номер телефона
