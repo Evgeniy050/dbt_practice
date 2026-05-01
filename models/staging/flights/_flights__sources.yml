@@ -1,0 +1,54 @@
+sources:
+  - name: demo_src #название схемы в БД
+    description: Данные из БД авиаперелетов
+    database: dwh_flight #название БД (по-умолчанию из profiles.yml)
+    schema: demo_src #
+    tables:
+      - name: aircrafts
+        description: Модели самолетов
+        columns: 
+          - name: aircraft_code
+            description: Код модели самолета
+            tests:
+              - not_null
+              - unique
+          - name: model 
+            description: модели самолета
+          - name: range
+            description: неизвестное поле
+      - name: airports
+        description: Аэропорты
+        columns: 
+          - name: airport_code
+            description: Код аэропорта
+          - name: airport_name 
+            description: Название
+          - name: city
+            description: Город
+          - name: coordinates 
+            description: Координаты
+          - name: timezone
+            description: Таймзона
+      - name: seats
+        description: Места в самолете
+        columns: 
+          - name: aircraft_code
+            description: Код модели самолета
+          - name: seat_no 
+            description: Номер места
+          - name: fare_conditions
+            description: Класс места
+      - name: bookings
+        columns: 
+          - name: book_ref
+          - name: book_date 
+          - name: total_amount
+        freshness:
+          warn_after:
+            count: 600000
+            period: hour #если самая свежая запись более 6 частов в таблице - предупреждение
+          error_after:
+            count: 10000
+            period: day # тут ошибка, если последняя запись больше 1 дня в таблице
+          filter: current_timestamp::date - book_date::date < 30000 #условие для скнирования не всей таблицы
+        loaded_at_field: book_date::timestamp
